@@ -958,3 +958,38 @@ Week 4. Android SDK/emulator only needed in Week 6.
 toward Week 5's project: Dart `Account` (needs `_balance` privacy, constructors, and a money type — note Dart has no
 built-in `BigDecimal`; decide between integer cents and the `decimal` package). Add a Dart `.gitignore`
 (`.dart_tool/`) and `pubspec.yaml` before the project. README still the Java one — Claude rewrites it on Sunday.
+
+## 2026-10-02 — Week 5, session 2 (Tuesday): null safety practice, money validation
+
+**Built / did**
+- Warm-up: `greeter.dart` accepts age `-5`. Learned format check (`tryParse`) vs range check (write it yourself).
+- `bin/deposit.dart`: `double.tryParse`, null check, `!amount.isFinite`, `<= 0`, prints `$x.xx` with
+  `toStringAsFixed(2)` and escaped `\$`. Found by testing: `NaN` and `Infinity` parse as valid doubles.
+- `bin/withdraw.dart`: hard-coded balance 100.00, rejects invalid / ≤ 0 / more than balance, prints withdrawal and new
+  balance. Passed both edge cases (`100` allowed → `$0.00`, `100.01` → `Insufficient funds`).
+- `bin/currency.dart`: USD → KHR with `const int usdToKhrRate = 4100`, `.round()` to whole riel (his own idea).
+- `bin/account_name.dart`: `String? nickname`, `nickname ?? accountNumber`, `nickname?.length ?? 0`.
+- `analysis_options.yaml` with the `prefer_single_quotes` lint (Cmd+. → fix all in file).
+
+**Understood**
+- Every comparison with `NaN` is false, so "reject if bad" checks let it through. Explained why himself.
+- Check order: "is it a valid number?" before "is it sensible?" (`-Infinity` should say `Invalid amount`).
+- Type promotion after `if (x == null) return;`, explained correctly again.
+- `const` = known at compile time; `final` = set once at run time (`khrAmount` depends on input).
+- `!` crashes at run time if the value is null; prefer `?.` / `??` / null check.
+- Edge cases come in pairs (last allowed value, first rejected value): `>` vs `>=`.
+- `0.001` withdrawal prints `$0.00` / `$100.00` while the real balance is `99.999`; Java's `Account` rejected it.
+
+**Shaky, revisit next time**
+- Finished-result habit, still: newline fix applied to 1 of 3 messages; double quotes and missing `final` came back
+  in exercise 2; `'Saving'`/`nickName` instead of `'Savings'`/`nickname`. Improving with the lint, but re-read first.
+- `stdout.write('...\n')` instead of `print`. Works, but `print` is the Dart way; `stdout.write` only for prompts.
+- Money type: first reason for picking `decimal` ("division is hard with cents") was wrong. `Account` needs no
+  division, and division needs a rounding rule either way. Also skipped the "what to be careful about" half again.
+  Then correctly found cents' weak spot: converting at input (`0.29 * 100` is not exactly 29) and display (`5` → `$0.05`).
+- Old files (`hello`, `variables`, `greeter`) still use double quotes; the lint now flags them.
+
+**Next session (Thursday): practice + review.** Harder exercises: the `0.001` problem (decimal-place validation), maybe
+loops in Dart (re-prompt until valid, like Java Week 2), and Dart functions with parameters/return types, all toward
+`Account`. Decide the money type (cents vs `decimal`) before Saturday. Still to do before the project: `pubspec.yaml`
+and a Dart `.gitignore` (`.dart_tool/`). README still the Java one; Claude rewrites it on Sunday.
